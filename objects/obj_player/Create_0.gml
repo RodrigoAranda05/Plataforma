@@ -27,7 +27,7 @@ pega_input = function()
     jump = keyboard_check(vk_space)
 }
 
-movimento = function()
+aplica_velocidade = function()
 {
     velh = (right - left) * max_velh
     
@@ -52,6 +52,12 @@ movimento = function()
         }
     }
     
+    //move_and_collide(velh, 0, obj_parede, 4)
+    //move_and_collide(0, velv, obj_parede, 12)
+}
+
+movimento = function()
+{
     move_and_collide(velh, 0, obj_parede, 4)
     move_and_collide(0, velv, obj_parede, 12)
 }
@@ -87,9 +93,17 @@ estado_parado = function()
     {
         estado = estado_pulo
     }
+    
+    // se nao estou no chao to caindo 
+    if(!chao)
+    {
+        estado = estado_pulo
+    }
 }
 estado_movendo = function()
 {
+    aplica_velocidade()
+    
     troca_sprit(spr_player_move)
     
     // se a velh for 0 muda o estado para parado    
@@ -100,6 +114,8 @@ estado_movendo = function()
 }
 estado_pulo = function()
 {
+    aplica_velocidade()
+    
     // se estou subindo minha velv e negativa
     if(velv < 0)
     {
@@ -116,6 +132,11 @@ estado_pulo = function()
     {
         estado = estado_parado
     }
+}
+
+estado_congelado = function ()
+{
+    image_blend = c_aqua
 }
 
 #endregion
