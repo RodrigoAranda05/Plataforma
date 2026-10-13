@@ -27,6 +27,7 @@ pega_input = function()
     jump = keyboard_check(vk_space)
 }
 
+// pegando o input do jogador
 aplica_velocidade = function()
 {
     velh = (right - left) * max_velh
@@ -56,6 +57,7 @@ aplica_velocidade = function()
     //move_and_collide(0, velv, obj_parede, 12)
 }
 
+// aplicando a velocidade
 movimento = function()
 {
     move_and_collide(velh, 0, obj_parede, 4)
@@ -66,6 +68,16 @@ checa_chao = function ()
 {
     // Pega se o player toca no chao
     chao = place_meeting(x,y + 1, obj_parede)
+}
+
+// checa se a animaçao acabou para trocar para outra
+acabou_animacao = function()
+{
+    var _spd = sprite_get_speed(sprite_index) / FPS
+    if(image_index + _spd >= image_number)
+    {
+        return true
+    }
 }
 
 // Metodos dos estados
@@ -134,9 +146,35 @@ estado_pulo = function()
     }
 }
 
-estado_congelado = function ()
+estado_powerup_inicio = function()
 {
-    image_blend = c_aqua
+    velh = 0
+    troca_sprit(spr_player_powerup_inicio)
+    
+    if(acabou_animacao())
+    {
+        estado = estado_powerup_meio
+    }
+}
+
+estado_powerup_meio = function()
+{
+    troca_sprit(spr_player_powerup_meio)
+    
+    if(acabou_animacao())
+    {
+        estado = estado_powerup_fim
+    }
+}
+
+estado_powerup_fim = function()
+{
+    troca_sprit(spr_player_powerup_fim)
+    
+    if(acabou_animacao())
+    {
+        estado = estado_parado
+    }
 }
 
 #endregion
