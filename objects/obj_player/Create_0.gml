@@ -24,12 +24,15 @@ pega_input = function()
 {
     right = keyboard_check(ord("D")) or keyboard_check(vk_right)
     left = keyboard_check(ord("A")) or keyboard_check(vk_left)
-    jump = keyboard_check(vk_space)
+    jump = keyboard_check_pressed(vk_space)
 }
 
 // pegando o input do jogador
 aplica_velocidade = function()
 {
+    //checando se estou no chao
+    checa_chao()
+    
     velh = (right - left) * max_velh
     
     //Aplicando a gravidade
@@ -55,6 +58,12 @@ aplica_velocidade = function()
     
     //move_and_collide(velh, 0, obj_parede, 4)
     //move_and_collide(0, velv, obj_parede, 12)
+}
+
+ajusta_escala = function()
+{
+    if(velh != 0)
+        image_xscale = sign(velh)
 }
 
 // aplicando a velocidade
@@ -91,8 +100,19 @@ troca_sprit = function(_spr = spr_parede)
         image_index = 0
     }
 }
+
+cria_particula_pulo = function (_spr = spr_pulo_particula)
+{
+    var _particula = instance_create_depth(x,y,depth + 1, obj_pulo_particula)
+    _particula.sprite_index = _spr
+}
+
 estado_parado = function()
 {
+    velv = 0
+    velh = 0
+    aplica_velocidade()
+    
     troca_sprit(spr_player_idle)
     
     // Se apertei pa direita ou esquerda muda o estado para movendo    
@@ -104,6 +124,7 @@ estado_parado = function()
     if(jump)
     {
         estado = estado_pulo
+        cria_particula_pulo(spr_pulo_particula)
     }
     
     // se nao estou no chao to caindo 
@@ -122,6 +143,12 @@ estado_movendo = function()
     if(velh == 0)
     {
         estado = estado_parado
+    }
+    
+    if(jump)
+    {
+        estado = estado_pulo
+        cria_particula_pulo(spr_pulo_particula)
     }
 }
 estado_pulo = function()
@@ -143,6 +170,7 @@ estado_pulo = function()
     if(chao)
     {
         estado = estado_parado
+        cria_particula_pulo(spr_pousar_particula)
     }
 }
 
@@ -170,6 +198,21 @@ estado_powerup_meio = function()
 estado_powerup_fim = function()
 {
     troca_sprit(spr_player_powerup_fim)
+    
+    if(acabou_animacao())
+    {
+        estado = estado_parado
+    }
+}
+
+estado_entrando_tinta = function()
+{
+    troca_sprit(spr_player_tinta_entrar)
+}
+
+estado_saindo_tinta = function()
+{
+    troca_sprit(spr_player_tinta_sair)
     
     if(acabou_animacao())
     {
@@ -232,4 +275,4 @@ ativa_debug = function()
 
 
 // Definindo o esstado inicial do player
-estado = estado_parado
+estado = estado_saindo_tinta
